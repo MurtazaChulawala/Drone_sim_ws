@@ -61,7 +61,7 @@ cd ..
 colcon build
 
 # 4. Source the installation
-source install/setup.bash
+source ./install/setup.bash
 ```
 *Note: You must run `source install/setup.bash` in every new terminal before executing ROS 2 commands.*
 
@@ -77,7 +77,8 @@ make px4_sitl gz_x500_mono_cam_down_aruco
 
 **Terminal 2: Launch MicroXRCE Agent, ROS-GZ Bridge, Telemetry Node, Perception Node using ros2 Launch**
 ```bash
-source install/setup.bash
+cd Drone_sim_ws
+source ./install/setup.bash
 ros2 launch drone_bringup drone_sim.launch.py
 ```
 
@@ -90,9 +91,8 @@ commander land      #You can use commander land command to land the drone on the
 
 ## 6. Data Recording
 A `rosbag2` was recorded during the simulation, capturing the telemetry and perception data.
-* **File Location:** The compressed bag file is located in the root of this repository (`.zip` format).
-* **Extraction Note:** Please unzip the file to access the full `.mcap` data (expands to ~6.6GB).
-* **Inspected Topics:** `/camera/image_raw`, `/perception/target_center`, `/fmu/out/vehicle_odometry`, `/fmu/out/vehicle_status`
+* **File Location:** The compressed bag file is located in the root of this repository (`.zip` format) unzip or extrtact the file.
+* **Inspected Topics:** `/camera/image_raw`, `/perception/target_center`, `/fmu/out/vehicle_odometry`
 * To run it follow this command after extraction within the Drone_sim_ws folder below
 ```bash
 ros2 bag play drone_sim_data_ros2_bag
