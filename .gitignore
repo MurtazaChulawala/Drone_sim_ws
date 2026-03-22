@@ -1,0 +1,26 @@
+# ROS 2 colcon build artifacts
+build/
+install/
+log/
+
+# Python compiled files
+__pycache__/
+*.pyc
+*.pyo
+
+# Cross-platform editor and OS temporary files
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+
+# colcon specific ignore file (optional, but standard practice)
+COLCON_IGNORE
+
+src/px4_msgs/
+
+# Ignore ROS 2 bag files
+*.mcap
+*.db3
+drone_sim_data/
