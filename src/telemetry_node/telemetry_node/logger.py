@@ -1,6 +1,8 @@
 import rclpy
 from rclpy.node import Node
 from px4_msgs.msg import VehicleOdometry
+# we need to use the best effort qos since the udp works on the best effort while the ros2 by default works on the reliable effort
+# that is the reason why we have imported the qos profile sensor data 
 from rclpy.qos import qos_profile_sensor_data
 
 class logger(Node):

@@ -36,5 +36,18 @@ def generate_launch_description():
             package='telemetry_node',
             executable='telemetry_node',
             output='screen'
+        ),
+
+        # Starting joy_node
+        Node(
+            package='joy',
+            executable='joy_node',
+            output='screen'
+        ),
+        # Starting Telemetry Logger
+        Node(
+            package='drone_commander',
+            executable='drone_commander',
+            output='screen'
         )
     ])

@@ -52,7 +52,7 @@ class ArucoFinder(Node):
             point.z = 0.0
             self.pub_.publish(point)
         else:
-            self.get_logger().info("Searching for landing pad...", throttle_duration_sec=2.0) # while only printing searching for pad every 2 sec
+            self.get_logger().info("Searching for Aruco Code...", throttle_duration_sec=2.0) # while only printing searching for pad every 2 sec
 
         # 5. Display the live video feed
         cv2.imshow("Drone Downward Camera", cv_image)
