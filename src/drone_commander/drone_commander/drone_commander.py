@@ -38,12 +38,12 @@ class Commander(Node):
         self.joy_v_z = -msg.axes[1] * 2.0  # left stick ud (Z is negative in NED)
         self.joy_yaw = -msg.axes[0] * 1.5  # yaw left stick lr
 
-        # Button 0 (rb) to Switch to Offboard
+        # Button 5 (rb) to Switch to Offboard
         if msg.buttons[5] == 1:
             # VEHICLE CMD DO SET MODE PARAM 1 VALUE 1.0 DENOTES CUSTOM MODE ENABLED AND PARAM 2 VALUE 6.0 DENOTES OFFBOARD CONTROL MODE ENABLED 
             self.publish_vehicle_command(VehicleCommand.VEHICLE_CMD_DO_SET_MODE,param1 = 1.0, param2 = 6.0)
 
-        # Button 0 (lb) to Arm
+        # Button 4 (lb) to Arm
         if msg.buttons[4] == 1:
             # VEHICLE CMD COMPONENT ARM DISARM VALUE 1.0 FOR ARM AND VALUE 0.0 FOR DISARM 
             self.publish_vehicle_command(VehicleCommand.VEHICLE_CMD_COMPONENT_ARM_DISARM, param1=1.0)
@@ -63,10 +63,12 @@ class Commander(Node):
         setpoint_msg.timestamp = int(self.get_clock().now().nanoseconds / 1000)
         self.trajectory_pub.publish(setpoint_msg)
 
+    # A reusable function for offbaord control switching and the arming process
     def publish_vehicle_command(self, command, param1=0.0, param2=0.0):
         msg = VehicleCommand()
         msg.param1, msg.param2 = param1, param2
         msg.command = command
+        # setting both the target and source to 1 explicitly allows us to tell px4 that we are running on the same system in a sim so we can initiate a handshake
         msg.target_system, msg.target_component = 1, 1
         msg.source_system, msg.source_component = 1, 1
         msg.from_external = True
