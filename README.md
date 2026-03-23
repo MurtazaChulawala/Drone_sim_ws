@@ -1,3 +1,5 @@
+# ROS 2 Jazzy + PX4: Integrated Vision-Based Perception & Offboard Teleoperation for Quadcopter Drone
+
 ## 1. Project Overview
 This repository demonstrates a high-performance integration of PX4 Autopilot and ROS 2 Jazzy for autonomous and manual UAV operations. This setup was developed to bridge the gap between high-level ROS 2 vision processing and low-level PX4 flight control, proving that a modern Gazebo-Jazzy stack can handle real-time autonomous target tracking. It features a low-latency Micro XRCE-DDS communication pipeline, a custom Joy-to-Offboard teleoperation bridge, and an OpenCV-based ArUco perception system for real-time target acquisition in Gazebo simulaation. Designed for modularity, it provides a robust foundation for precision landing and autonomous mission execution.
 
