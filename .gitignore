@@ -23,4 +23,4 @@ src/px4_msgs/
 # Ignore ROS 2 bag files
 *.mcap
 *.db3
-drone_sim_data/
+drone_sim_data_bag/
