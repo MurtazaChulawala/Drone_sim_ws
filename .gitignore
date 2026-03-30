@@ -23,4 +23,7 @@ src/px4_msgs/
 # Ignore ROS 2 bag files
 *.mcap
 *.db3
+
+# ignoring the ros2 bag
 drone_sim_data_bag/
+Drone simulation gif.mp4

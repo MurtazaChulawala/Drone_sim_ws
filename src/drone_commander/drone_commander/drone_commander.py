@@ -24,6 +24,7 @@ class Commander(Node):
 
         # Subscribers
         self.joy_sub = self.create_subscription(Joy, '/joy', self.joy_callback, 10)
+        self.cg_sub = self.create_subscription(Point, 'perception/target_center', self.cgval_callback, 10)
 
         # Timer for Heartbeat (10Hz is mandatory for Offboard)
         self.timer = self.create_timer(0.1, self.timer_callback)
@@ -38,15 +39,22 @@ class Commander(Node):
         self.joy_v_z = -msg.axes[1] * 2.0  # left stick ud (Z is negative in NED)
         self.joy_yaw = -msg.axes[0] * 1.5  # yaw left stick lr
 
-        # Button 0 (rb) to Switch to Offboard
+        # Button (rb) to Switch to Offboard
         if msg.buttons[5] == 1:
             # VEHICLE CMD DO SET MODE PARAM 1 VALUE 1.0 DENOTES CUSTOM MODE ENABLED AND PARAM 2 VALUE 6.0 DENOTES OFFBOARD CONTROL MODE ENABLED 
             self.publish_vehicle_command(VehicleCommand.VEHICLE_CMD_DO_SET_MODE,param1 = 1.0, param2 = 6.0)
 
-        # Button 0 (lb) to Arm
+        # Button (lb) to Arm
         if msg.buttons[4] == 1:
             # VEHICLE CMD COMPONENT ARM DISARM VALUE 1.0 FOR ARM AND VALUE 0.0 FOR DISARM 
             self.publish_vehicle_command(VehicleCommand.VEHICLE_CMD_COMPONENT_ARM_DISARM, param1=1.0)
+
+    def cgval_callback(self, msg):
+        if ((msg.x >= 630 and msg.x <= 650) and (msg.y >= 460 and msg.y <= 490) and (msg.z >= 1.0)):
+            # Below command would shut the offboard control and give the control to autopilot for loitering 
+            self.publish_vehicle_command(VehicleCommand.VEHICLE_CMD_DO_SET_MODE,param1 = 1.0, param2 = 4.0)
+            # cmd nav land will trigger landing on the spot
+            self.publish_vehicle_command(VehicleCommand.VEHICLE_CMD_NAV_LAND)
 
     def timer_callback(self):
         # 1. Publish Heartbeat

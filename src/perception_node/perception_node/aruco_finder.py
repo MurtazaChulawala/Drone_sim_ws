@@ -5,6 +5,7 @@ from cv_bridge import CvBridge
 import cv2
 from cv2 import aruco as ar
 from geometry_msgs.msg import Point
+import math
 
 class ArucoFinder(Node):
     def __init__(self):
@@ -12,6 +13,11 @@ class ArucoFinder(Node):
         self.pub_ = self.create_publisher(Point, "/perception/target_center" ,10)
         self.sub_=self.create_subscription(Image, "camera/image_raw", self.image_callback, 10)
         self.cvbridge_ = CvBridge()
+        # Using DICT_4X4_50 since the aruco tag is 4*4
+        aruco_dict = ar.getPredefinedDictionary(ar.DICT_4X4_50)
+        parameters = ar.DetectorParameters()
+        # we need to pass the ArucoDetector with the aruco dict and the parameters for detection
+        self.detector = ar.ArucoDetector(aruco_dict, parameters)
 
     def image_callback(self, msg):
         # 1. Translating ROS2 Image to OpenCV readable Image
@@ -20,18 +26,11 @@ class ArucoFinder(Node):
         except Exception as e:
             self.get_logger().error(f"Translation error: {e}")
             return None
+        
+        # 2. Detect the markers in the image
+        corners, ids, rejected = self.detector.detectMarkers(cv_image)
 
-        # 2. Setup the ArUco Dictionary and Detector
-        # Using DICT_4X4_50 since the aruco tag is 4*4
-        aruco_dict = ar.getPredefinedDictionary(ar.DICT_4X4_50)
-        parameters = ar.DetectorParameters()
-        # we need to pass the ArucoDetector with the aruco dict and the parameters for detection
-        detector = ar.ArucoDetector(aruco_dict, parameters)
-
-        # 3. Detect the markers in the image
-        corners, ids, rejected = detector.detectMarkers(cv_image)
-
-        # 4. If a marker is found, process it
+        # 3. If a marker is found, process it
         if ids is not None:
             # Drawing a green box around the detected marker
             ar.drawDetectedMarkers(cv_image, corners, ids)
@@ -42,6 +41,13 @@ class ArucoFinder(Node):
             center_x = int((marker_corners[0][0] + marker_corners[2][0]) / 2)
             center_y = int((marker_corners[0][1] + marker_corners[2][1]) / 2)
 
+            # finding the avg pixel width at different height
+            pixel_width = math.sqrt(((marker_corners[1][0] - marker_corners[0][0])**2) + ((marker_corners[1][1] - marker_corners[0][1])**2))
+            
+            if pixel_width > 0:
+                self.visual_z = 248 / pixel_width # here 248 is an empirical relation i found using trials and error matching with the drone odometry z direction 
+            
+            # This should now read exactly 2.50m when you are at takeoff height
             # Drawing a solid red circle at the calculated center
             cv2.circle(cv_image, (center_x, center_y), 5, (0, 0, 255), -1)
 
@@ -49,12 +55,12 @@ class ArucoFinder(Node):
             point = Point()
             point.x = float(center_x)
             point.y = float(center_y)
-            point.z = 0.0
+            point.z = self.visual_z
             self.pub_.publish(point)
         else:
             self.get_logger().info("Searching for Aruco Code...", throttle_duration_sec=2.0) # while only printing searching for pad every 2 sec
 
-        # 5. Display the live video feed
+        # 4. Display the live video feed
         cv2.imshow("Drone Downward Camera", cv_image)
         cv2.waitKey(1) # This forces OpenCV to refresh the window       
     
