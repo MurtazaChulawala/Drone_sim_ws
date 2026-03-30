@@ -1,7 +1,7 @@
-# ROS 2 Jazzy + PX4: Integrated Vision-Based Perception & Offboard Teleoperation for Quadcopter Drone
+# ROS 2 Jazzy + PX4: Integrated Vision-Based Perception & Offboard Teleoperation for Autonomous Drone System
 
 ## 1. Project Overview
-This repository demonstrates a high-performance integration of PX4 Autopilot and ROS 2 Jazzy for autonomous and manual UAV operations. This setup was developed to bridge the gap between high-level ROS 2 vision processing and low-level PX4 flight control, proving that a modern Gazebo-Jazzy stack can handle real-time autonomous target tracking. It features a low-latency Micro XRCE-DDS communication pipeline, a custom Joy-to-Offboard teleoperation bridge, and an OpenCV-based ArUco perception system for real-time target acquisition in Gazebo simulation. Designed for modularity, it provides a robust foundation for precision landing and autonomous mission execution.
+This repository demonstrates a high-performance integration of PX4 Autopilot and ROS 2 Jazzy for autonomous and manual UAV operations. This setup was developed to bridge the gap between high-level ROS 2 vision processing and low-level PX4 flight control, proving that a modern Gazebo-Jazzy stack can handle real-time autonomous target tracking and landing autonomously once the target is locked. It features a low-latency Micro XRCE-DDS communication pipeline, a custom Joy-to-Offboard teleoperation bridge, and an OpenCV-based ArUco perception system for real-time target acquisition, alititude measurement and allowing the drone to land once the aruco board is at the center of the frame in Gazebo simulation. Designed for modularity, it provides a robust precision landing and autonomous mission execution workspace.
 
 https://github.com/user-attachments/assets/7c1ae57b-f8a3-4a06-9692-ba177e3a7254
 
@@ -134,7 +134,7 @@ ros2 launch drone_bringup drone_sim.launch.py
 * Use Right joystick left and right motion for Sideways movement along Y (East).
 * Use Left joystick Up and Down motion for vertical movement along Z axis.
 * Use Left joystick left and right motion for angular Yaw motion along Z axis.
-* To land the drone Use Left Joystick and move it downwards till you see the rotors stop spinning.
+* Once the drone is above 1 m altitude and the aruco board is detected to be at the center the drone would cut off the offboard control and land right away on the board.
 
 * Ctrl C both the terminals to end the execution.
 
@@ -157,9 +157,8 @@ ros2 bag play drone_sim_data_bag
 
 ## 8. Future work
 
-*Now that the communication bridge and basic perception are working well, I’m looking to expand on what this drone can do:*
+*Now that the communication bridge and basic landing process are working well, I’m looking to expand on what this drone can do:*
 
-* **Precision Landing**: While I’m happy to have the drone "find" the target, the next step is to close the loop and use the coordinates to run a PID controller to land on the target.
 * **GPS denied Navigation**: Real-world missions involve "GPS-denied" environments (indoor environments, under bridges, etc.). I’m looking to use this vision data in conjunction with the IMU and Barometer sensors to run an EKF2 filter so that the drone can know where it is based on what it’s seen.
 * **Hardware Deployment**: The end game is to get this code off the laptop and onto a companion computer (Jetson, Pi 5, etc.). Going from SITL to a physical flight controller via a serial cable is where things get serious.
 * **Dynamic Obstacle Avoidance**: I’m looking to incorporate Depth or LiDAR data via the bridge. While it’s one thing to locate a target, it’s another thing to navigate to it without hitting anything.
